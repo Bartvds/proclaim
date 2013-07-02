@@ -76,6 +76,40 @@
 
             });
 
+            describe('showDiff', function() {
+
+                it('should have correct value on new AssertionError instance', function () {
+                    assert.equal(new proclaim.AssertionError().showDiff, false, 'default');
+
+                    assert.notEqual(new proclaim.AssertionError({actual:undefined, expected:undefined}).showDiff, true, 'undefined v undefined');
+                    assert.notEqual(new proclaim.AssertionError({actual:undefined, expected:false}).showDiff, true, 'undefined v boolean');
+                    assert.notEqual(new proclaim.AssertionError({actual:undefined, expected:1}).showDiff, true, 'undefined v number');
+                    assert.notEqual(new proclaim.AssertionError({actual:undefined, expected:'world'}).showDiff, true, 'undefined v string');
+                    assert.notEqual(new proclaim.AssertionError({actual:undefined, expected:{a:1,b:2}}).showDiff, true, 'undefined v object');
+                    assert.notEqual(new proclaim.AssertionError({actual:undefined, expected:[1,2,3]}).showDiff, true, 'undefined v array');
+
+                    assert.notEqual(new proclaim.AssertionError({actual:true, expected:false}).showDiff, true, 'boolean v boolean');
+                    assert.notEqual(new proclaim.AssertionError({actual:true, expected:1}).showDiff, true, 'boolean v number');
+                    assert.notEqual(new proclaim.AssertionError({actual:true, expected:'world'}).showDiff, true, 'boolean v string');
+                    assert.notEqual(new proclaim.AssertionError({actual:true, expected:{a:1,b:2}}).showDiff, true, 'boolean v object');
+                    assert.notEqual(new proclaim.AssertionError({actual:true, expected:[1,2,3]}).showDiff, true, 'boolean v array');
+
+                    assert.notEqual(new proclaim.AssertionError({actual:1, expected:1}).showDiff, true, 'number v number');
+                    assert.notEqual(new proclaim.AssertionError({actual:1, expected:'world'}).showDiff, true, 'number v string');
+                    assert.notEqual(new proclaim.AssertionError({actual:1, expected:{a:1,b:2}}).showDiff, true, 'number v object');
+                    assert.notEqual(new proclaim.AssertionError({actual:1, expected:[1,2,3]}).showDiff, true, 'number v array');
+
+                    assert.equal(new proclaim.AssertionError({actual:'hello', expected:'world'}).showDiff, true, 'string v string');
+                    assert.equal(!new proclaim.AssertionError({actual:'hello', expected:{a:1,b:2}}).showDiff, true, 'string v object');
+                    assert.notEqual(new proclaim.AssertionError({actual:'hello', expected:[1,2,3]}).showDiff, true, 'string v array');
+
+                    assert.equal(new proclaim.AssertionError({actual:{a:2,b:4}, expected:{a:1,b:2}}).showDiff, true, 'object v object');
+                    assert.notEqual(new proclaim.AssertionError({actual:{a:2,b:4}, expected:[1,2,3]}).showDiff, true, 'object v array');
+
+                    assert.equal(new proclaim.AssertionError({actual:[3,2,1], expected:[1,2,3]}).showDiff, true, 'array v array');
+                });
+            });
+
         });
 
         describe('.fail()', function () {
@@ -120,6 +154,26 @@
                 assert.throws(function () { proclaim.ok(false); }, proclaim.AssertionError);
                 assert.throws(function () { proclaim.ok(0); }, proclaim.AssertionError);
                 assert.throws(function () { proclaim.ok(''); }, proclaim.AssertionError);
+            });
+
+        });
+
+        describe('.notOk()', function () {
+
+            it('should be a function', function () {
+                assert.strictEqual(typeof proclaim.notOk, 'function');
+            });
+
+            it('should not throw when called with falsy values', function () {
+                assert.doesNotThrow(function () { proclaim.notOk(false); });
+                assert.doesNotThrow(function () { proclaim.notOk(0); });
+                assert.doesNotThrow(function () { proclaim.notOk(''); });
+            });
+
+            it('should throw when called with truthy values', function () {
+                assert.throws(function () { proclaim.notOk(true); }, proclaim.AssertionError);
+                assert.throws(function () { proclaim.notOk(1); }, proclaim.AssertionError);
+                assert.throws(function () { proclaim.notOk('foo'); }, proclaim.AssertionError);
             });
 
         });
