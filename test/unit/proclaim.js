@@ -69,7 +69,16 @@
                     });
 
                     it('should return a string representation of the error when no message is set', function () {
-                        assert.strictEqual('' + errWithNoMessage, 'AssertionError: bar === baz');
+                        assert.strictEqual('' + errWithNoMessage, 'AssertionError: "bar" === "baz"');
+
+                        optsWithNoMessage = {
+                            message: null,
+                            actual: {a:1, b:2},
+                            expected: {a:1, b:2},
+                            operator: '==='
+                        };
+                        errWithNoMessage = new proclaim.AssertionError(optsWithNoMessage);
+                        assert.strictEqual('' + errWithNoMessage, 'AssertionError: {"a":1,"b":2} === {"a":1,"b":2}');
                     });
 
                 });
