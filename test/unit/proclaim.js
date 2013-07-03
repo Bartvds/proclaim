@@ -33,6 +33,7 @@
 
             describe('instance', function () {
                 var optsWithMessage, errWithMessage, optsWithNoMessage, errWithNoMessage;
+                var expectedWithMessage, expectedWithNoMessage;
 
                 beforeEach(function () {
                     optsWithMessage = {
@@ -41,9 +42,22 @@
                         expected: 'baz',
                         operator: '==='
                     };
+                    expectedWithMessage = {
+                        message: 'foo: expected "bar" === "baz"',
+                        actual: 'bar',
+                        expected: 'baz',
+                        operator: '==='
+                    };
                     errWithMessage = new proclaim.AssertionError(optsWithMessage);
+
                     optsWithNoMessage = {
-                        message: null,
+                        message: '',
+                        actual: 'bar',
+                        expected: 'baz',
+                        operator: '==='
+                    };
+                    expectedWithNoMessage = {
+                        message: 'expected "bar" === "baz"',
                         actual: 'bar',
                         expected: 'baz',
                         operator: '==='
@@ -56,29 +70,36 @@
                 });
 
                 it('should save the expected options as instance properties', function () {
-                    assert.strictEqual(errWithMessage.message, optsWithMessage.message);
-                    assert.strictEqual(errWithMessage.actual, optsWithMessage.actual);
-                    assert.strictEqual(errWithMessage.expected, optsWithMessage.expected);
-                    assert.strictEqual(errWithMessage.operator, optsWithMessage.operator);
+                    assert.strictEqual(errWithMessage.message, expectedWithMessage.message);
+                    assert.strictEqual(errWithMessage.actual, expectedWithMessage.actual);
+                    assert.strictEqual(errWithMessage.expected, expectedWithMessage.expected);
+                    assert.strictEqual(errWithMessage.operator, expectedWithMessage.operator);
+                });
+
+                it('should save the expected options as instance properties when no message is set', function () {
+                    assert.strictEqual(errWithNoMessage.message, expectedWithNoMessage.message);
+                    assert.strictEqual(errWithNoMessage.actual, expectedWithNoMessage.actual);
+                    assert.strictEqual(errWithNoMessage.expected, expectedWithNoMessage.expected);
+                    assert.strictEqual(errWithNoMessage.operator, expectedWithNoMessage.operator);
                 });
 
                 describe('#toString()', function () {
 
                     it('should return a string representation of the message', function () {
-                        assert.strictEqual('' + errWithMessage, 'AssertionError: foo');
+                        assert.strictEqual('' + errWithMessage, 'AssertionError: foo: expected "bar" === "baz"');
                     });
 
                     it('should return a string representation of the error when no message is set', function () {
-                        assert.strictEqual('' + errWithNoMessage, 'AssertionError: "bar" === "baz"');
+                        assert.strictEqual('' + errWithNoMessage, 'AssertionError: expected "bar" === "baz"');
 
-                        optsWithNoMessage = {
+                        var complexOptsWithNoMessage = {
                             message: null,
                             actual: {a:1, b:2},
                             expected: {a:1, b:2},
                             operator: '==='
                         };
-                        errWithNoMessage = new proclaim.AssertionError(optsWithNoMessage);
-                        assert.strictEqual('' + errWithNoMessage, 'AssertionError: {"a":1,"b":2} === {"a":1,"b":2}');
+                        errWithNoMessage = new proclaim.AssertionError(complexOptsWithNoMessage);
+                        assert.strictEqual('' + errWithNoMessage, 'AssertionError: expected {"a":1,"b":2} === {"a":1,"b":2}');
                     });
 
                 });
@@ -139,7 +160,7 @@
                     catch (err) { error = err; }
                     assert.strictEqual(error.actual, 'foo');
                     assert.strictEqual(error.expected, 'bar');
-                    assert.strictEqual(error.message, 'baz');
+                    assert.strictEqual(error.message, 'baz: expected "foo" qux "bar"');
                     assert.strictEqual(error.operator, 'qux');
                 });
 
